@@ -1,12 +1,14 @@
 package main;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -85,16 +87,19 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		exitButton.setAlignmentX(CENTER_ALIGNMENT);
 		testButton.setAlignmentX(CENTER_ALIGNMENT);
 		
-		//Add components
+		//Add components, rigidAreas are separators
 		add(title);
+		add(Box.createRigidArea(new Dimension(0, 10)));
 		
 		add(conButton);
 		add(ipField);
 		add(ipMessage);
+		add(Box.createRigidArea(new Dimension(0, 10)));
 		
 		add(hostButton);
 		add(portField);
 		add(portMessage);
+		add(Box.createRigidArea(new Dimension(0, 10)));
 		
 		add(exitButton);
 		add(testButton);
@@ -118,7 +123,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 			testIP = InetAddress.getByName(ipField.getText());
 		} catch(UnknownHostException e) {
 			System.out.println("Unkown Host");
-			ipMessage.setText("Faild: Unknown Host");
+			ipMessage.setText("Failed: Unknown Host");
 			return;
 		}
 		
@@ -131,9 +136,42 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	 * Host a game
 	 */
 	void host() {
-		int port = Integer.parseInt(portField.getText());
+		int port;
+		
+		try {
+			port = Integer.parseInt(portField.getText());
+		} catch(NumberFormatException e) {
+			System.out.println("Not a Number");
+			portMessage.setText("Failed: Not a Number");
+			return;
+		}
+		
+		if(port < 1024 || port > 49151) {
+			System.out.println("Invalid Port");
+			portMessage.setText("Failed: Invalid Port");
+			return;
+		}
+		
 		Connection c = new ServerConnection(port);
 		m.gamePanel.setConnection(c);
+		
+		String mes = m.gamePanel.tryConnection();
+		
+		System.out.println(mes);
+		
+		switch(mes) {
+			case "Connection not created":
+				portMessage.setText("Failed: This message should not appear.");
+				break;
+			
+			case "Success":
+				portMessage.setText("Success!");
+				break;
+			
+			default:
+				portMessage.setText("Failed: This message should not appear");
+				break;
+		}
 	}
 	
 	/**

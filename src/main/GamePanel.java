@@ -78,8 +78,19 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	 * @param c The Connection object to use
 	 */
 	public void setConnection(Connection c) {
-		if(c != null) return;	//Don't set it twice? TODO: Confirm if this can be changed
 		con = c;
+	}
+	
+	/**
+	 * Trys to connect with the given connection object
+	 * @return Status
+	 */
+	public String tryConnection() {
+		if(con == null) {
+			System.out.println(con);
+			return "Connection not created";
+		}
+		return "Success";
 	}
 	
 	/**

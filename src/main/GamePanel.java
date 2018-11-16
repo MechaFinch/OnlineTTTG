@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -19,8 +20,8 @@ import connection.Connection;
  */
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements ActionListener, MouseListener, MouseMotionListener{
-	//Window switching Main instance
-	Main m;
+	//Window switching main class instance
+	OnlineTicTacToe m;
 	
 	//Window variables
 	GameCanvas canvas = new GameCanvas();
@@ -43,7 +44,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	 * Default constructor
 	 * @param m Instance of Main
 	 */
-	public GamePanel(Main m) {
+	public GamePanel(OnlineTicTacToe m) {
 		//Allow panel switching
 		this.m = m;
 		
@@ -84,13 +85,15 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	/**
 	 * Trys to connect with the given connection object
 	 * @return Status
+	 * @throws IOException 
 	 */
-	public String tryConnection() {
+	public String tryConnection() throws IOException {
 		if(con == null) {
 			System.out.println(con);
 			return "Connection not created";
 		}
-		return "Success";
+		
+		return con.connect();
 	}
 	
 	/**

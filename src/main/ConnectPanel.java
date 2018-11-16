@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -25,8 +26,8 @@ import connection.ServerConnection;
  */
 @SuppressWarnings("serial")
 public class ConnectPanel extends JPanel implements ActionListener{
-	//Instance of main to switch windows with
-	Main m;
+	//Instance of the main class to switch windows with
+	OnlineTicTacToe m;
 	
 	//Graphics objects
 	JLabel title = new JLabel("Online TTT"),
@@ -46,7 +47,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	 * Panel screen for the main menu
 	 * @param m
 	 */
-	ConnectPanel(Main m){
+	ConnectPanel(OnlineTicTacToe m){
 		//Get main instance so we can switch panels
 		this.m = m;
 		
@@ -117,19 +118,78 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	 * Connect to a game
 	 */
 	void connect(){
-		//Make sure IP is valid
+		//Make sure IP and port are valid
 		InetAddress testIP;
+		int port;
 		try {
-			testIP = InetAddress.getByName(ipField.getText());
+			String[] sa = ipField.getText().split(":");
+			
+			//Check if both exist
+			if(sa.length != 2) {
+				System.out.println("Invalid ip/port");
+				ipMessage.setText("Invalid IP/port - use ip:port");
+				return;
+			}
+			
+			testIP = InetAddress.getByName(sa[0]);
+			port = Integer.parseInt(sa[1]);
 		} catch(UnknownHostException e) {
 			System.out.println("Unkown Host");
 			ipMessage.setText("Failed: Unknown Host");
 			return;
+		} catch(NumberFormatException e) {
+			System.out.println("Invalid port - Not a Number");
+			ipMessage.setText("Invalid Port! Not a Number.");
+			return;
+		}
+		
+		//Make sure port is in range
+		if(port < 1024 || port > 49151) {
+			System.out.println("Invalid Port - Out of Range");
+			portMessage.setText("Invalid Port! Out of Range.");
+			return;
 		}
 		
 		//Attempt to connect to a server
-		Connection c = new ClientConnection(testIP);
+		Connection c = new ClientConnection(testIP, port);
 		m.gamePanel.setConnection(c);
+		
+		String mes;
+		
+		try{
+			mes = m.gamePanel.tryConnection();
+		} catch(IOException e) {
+			//Known IOExceptions
+			if(e.getMessage().contains("Connection refused")) {
+				System.out.println("Could not connect");
+				ipMessage.setText("Could not connect to server.");
+				return;
+			}
+			
+			//Unknown IOException
+			System.out.println("IOException:");
+			e.printStackTrace();
+			ipMessage.setText("IOException");
+			return;
+		}
+		
+		System.out.println(mes);
+		
+		//Output the result
+		switch(mes) {
+			case "Connection not created":
+				ipMessage.setText("Failed: This message should not appear.");
+				break;
+			
+			case "Success":
+				ipMessage.setText("Success!");
+				startGamePanel();
+				break;
+			
+			default:
+				ipMessage.setText("Failed: This message should not appear.");
+				break;
+		}
 	}
 	
 	/**
@@ -138,6 +198,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	void host() {
 		int port;
 		
+		//Get and check port
 		try {
 			port = Integer.parseInt(portField.getText());
 		} catch(NumberFormatException e) {
@@ -152,24 +213,41 @@ public class ConnectPanel extends JPanel implements ActionListener{
 			return;
 		}
 		
-		Connection c = new ServerConnection(port);
-		m.gamePanel.setConnection(c);
-		
-		String mes = m.gamePanel.tryConnection();
+		//Create the server
+		Connection c;
+		String mes;
+		try {
+			c = new ServerConnection(port);
+			
+			m.gamePanel.setConnection(c);
+			
+			//Listen for connection
+			mes = m.gamePanel.tryConnection();
+		} catch(IOException e) {
+			System.out.println("IOException: ");
+			e.printStackTrace();
+			portMessage.setText("Failed: IOException");
+			return;
+		}
 		
 		System.out.println(mes);
 		
+		//Output result
 		switch(mes) {
 			case "Connection not created":
 				portMessage.setText("Failed: This message should not appear.");
 				break;
 			
+			case "Handshake Failed":
+				portMessage.setText("Failed: Handshake failed");
+			
 			case "Success":
 				portMessage.setText("Success!");
+				startGamePanel();
 				break;
 			
 			default:
-				portMessage.setText("Failed: This message should not appear");
+				portMessage.setText("Failed: This message should not appear.");
 				break;
 		}
 	}

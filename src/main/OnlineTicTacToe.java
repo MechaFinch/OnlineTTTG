@@ -16,7 +16,7 @@ import javax.swing.UIManager;
  * Main program to run, doesn't do much other than hold the panels and frame
  * @author 21jpickering
  */
-public class Main {
+public class OnlineTicTacToe {
 	JFrame frame = new JFrame("Graphical Online TTT");
 	JPanel panel = new JPanel(new CardLayout());
 	GamePanel gamePanel = new GamePanel(this);
@@ -29,7 +29,7 @@ public class Main {
 	/**
 	 * Constructor because reasons
 	 */
-	public Main() {
+	public OnlineTicTacToe() {
 		try {
 			splashImage = ImageIO.read(new File("images/splash.png"));
 		} catch(IOException e) {
@@ -48,12 +48,12 @@ public class Main {
 		//Look and feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(Exception e) {	//fuck it
+		} catch(Exception e) {	//fuck how many exceptions this can have
 			e.printStackTrace();
 		}
 		
 		//Main program
-		new Main().betterMain();
+		new OnlineTicTacToe().betterMain();
 	}
 	
 	/**

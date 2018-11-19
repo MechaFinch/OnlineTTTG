@@ -20,15 +20,14 @@ public interface Connection {
 	 * @return Message received
 	 * @throws IllegalStateException if not connected
 	 */
-	public abstract String receive() throws IllegalStateException;
+	public abstract String receive() throws IllegalStateException, IOException;
 	
 	/**
 	 * Send a message to the connection
 	 * @param msg The message to be sent
-	 * @return Success
 	 * @throws IllegalStateException if not connected
 	 */
-	public abstract String send(String msg) throws IllegalStateException;
+	public abstract void send(String msg) throws IllegalStateException, IOException;
 	
 	/**
 	 * Creates a random string for handshakes

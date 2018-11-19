@@ -1,6 +1,11 @@
 package connection;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -10,9 +15,14 @@ import java.net.Socket;
  * @author Alex Pickering
  */
 public class ClientConnection implements Connection {
-	Socket s;
+	//Network variables
+	Socket con;
 	InetAddress ip;
 	int port;
+	
+	//Network IO
+	PrintWriter write;
+	BufferedReader read;
 	
 	/**
 	 * Default constructor
@@ -25,20 +35,38 @@ public class ClientConnection implements Connection {
 
 	@Override
 	public String connect() throws IOException {
-		s = new Socket(ip, port);
+		//Connect to server
+		con = new Socket(ip, port);
 		
-		return "";
+		//Create reader/writer
+		read = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		write = new PrintWriter(new BufferedWriter(new OutputStreamWriter(con.getOutputStream())), true);
+		
+		//Echo handshake
+		String s = receive();
+		System.out.println("Recieved handshake key: " + s);
+		send(s);
+		
+		//Record responce
+		return receive();
 	}
-
+	
+	//These would be default methods but they use non-final variables so oh well
 	@Override
-	public String receive() throws IllegalStateException {
-		// TODO Auto-generated method stub
-		return null;
+	public String receive() throws IllegalStateException, IOException {
+		//Check that the reader has been initialized
+		if(read.equals(null)) throw new IllegalStateException("Not Connected");
+		
+		//Read and return
+		return read.readLine();
 	}
-
+	
 	@Override
-	public String send(String msg) throws IllegalStateException {
-		// TODO Auto-generated method stub
-		return null;
+	public void send(String msg) throws IllegalStateException, IOException {
+		//Check that the writer has been initialized
+		if(write.equals(null)) throw new IllegalStateException("Not Connected");
+		
+		//Send
+		write.println(msg);
 	}
 }

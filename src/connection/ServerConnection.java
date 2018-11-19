@@ -1,6 +1,11 @@
 package connection;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -12,7 +17,11 @@ import java.net.Socket;
 public class ServerConnection implements Connection {
 	//Network objects
 	ServerSocket ss;
-	Socket s;
+	Socket con;
+	
+	//Network IO
+	PrintWriter write;
+	BufferedReader read;
 	
 	/**
 	 * Default constructor
@@ -26,10 +35,15 @@ public class ServerConnection implements Connection {
 	@Override
 	public String connect() throws IOException {
 		//Accept a connection
-		s = ss.accept();
+		con = ss.accept();
+		
+		//Create reader/writer
+		read = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		write = new PrintWriter(new BufferedWriter(new OutputStreamWriter(con.getOutputStream())), true);
 		
 		//Try handshake thing
 		String rand = createRandomString(10);
+		System.out.println("Sent handshake key: " + rand);
 		send(rand);
 		
 		//Give success info
@@ -38,22 +52,29 @@ public class ServerConnection implements Connection {
 				send("Success");
 				return "Success";
 			}
-		} catch(NullPointerException e) {	//No responce
+		} catch(NullPointerException e) {	//No response
 		}
 		
 		send("Failure");
 		return "Handshake Failed";
 	}
-
+	
+	//These would be default methods but they use non-final variables so oh well
 	@Override
-	public String receive() throws IllegalStateException {
-		// TODO Auto-generated method stub
-		return null;
+	public String receive() throws IllegalStateException, IOException {
+		//Check that the reader has been initialized
+		if(read.equals(null)) throw new IllegalStateException("Not Connected");
+		
+		//Read and return
+		return read.readLine();
 	}
 
 	@Override
-	public String send(String msg) throws IllegalStateException {
-		// TODO Auto-generated method stub
-		return null;
+	public void send(String msg) throws IllegalStateException, IOException {
+		//Check that the writer has been initialized
+		if(write.equals(null)) throw new IllegalStateException("Not Connected");
+		
+		//Send
+		write.println(msg);
 	}
 }

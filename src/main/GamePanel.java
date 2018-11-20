@@ -10,7 +10,9 @@ import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import connection.Connection;
 
@@ -27,6 +29,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	GameCanvas canvas = new GameCanvas();
 	
 	GameButtons buttons = new GameButtons(this);
+	
+	JTextField netTestField = new JTextField();
+	JButton netTestButton = new JButton("Net Test");
 	
 	//Mouse variables
 	int mouseX = 0, mouseY = 0;
@@ -55,13 +60,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		canvas.setSize(300, 300);
 		canvas.setBackground(new Color(255, 255, 255));
 		
-		//Add components
-		add(canvas);
-		add(buttons);
-		
 		//Add listeners
 		canvas.addMouseListener(this);
 		canvas.addMouseMotionListener(this);
+		
+		//Add components
+		add(canvas);
+		add(buttons);
 	}
 	
 	/**

@@ -3,6 +3,7 @@ package main;
 import java.awt.BasicStroke;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.Random;
@@ -66,6 +67,9 @@ public class GameCanvas extends Canvas {
 				g.drawRect((getWidth() / 3) * i, (getHeight() / 3) * j, getWidth() / 3, getHeight() / 3);
 		
 		//Draw x's and o's
+		g.setFont(new Font(getFont().getFontName(), Font.PLAIN, 36));
+		g.setColor(new Color(0, 0, 0));
+		
 		for(int i = 0; i < 3; i++)
 			for(int j = 0; j < 3; j++)
 				if(board[i][j] == 1)

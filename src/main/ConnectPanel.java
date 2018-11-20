@@ -122,7 +122,17 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		InetAddress testIP;
 		int port;
 		try {
-			String[] sa = ipField.getText().split(":");
+			String[] sa;
+			String s = ipField.getText();
+			
+			try {	//Check if its just a port, use localhost
+				int p = Integer.parseInt(s);
+				sa = new String[2];
+				sa[0] = "localhost";
+				sa[1] = s;
+			} catch(NumberFormatException e1) {	//ip:port
+				sa = s.split(":");
+			}
 			
 			//Check if both exist
 			if(sa.length != 2) {

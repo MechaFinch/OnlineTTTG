@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -17,7 +18,7 @@ import javax.swing.JTextField;
 import connection.Connection;
 
 /**
- * The overarching panel for the game
+ * The overarching panel for the game. Handles the game itself.
  * @author Alex Pickering
  */
 @SuppressWarnings("serial")
@@ -41,6 +42,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	//Game variables
 	int[][] board = new int[3][3];
 	int frameRate = 20;
+	EndState endState = EndState.IN_PROGRESS;
 	Connection con;	//The connection, may be a server or client
 	
 	boolean canvasStarted = false;
@@ -102,17 +104,81 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	}
 	
 	/**
+	 * Checks if anyone has won the game
+	 * @return A new EndState for who won
+	 */
+	public EndState checkForWin() {
+		boolean x;
+		
+		//HT, VL, DLR
+		if(board[0][0] != 0) {
+			x = board[0][0] == 1;
+			
+			//HT
+			if(board[0][0] == board[1][0] && board[1][0] == board[2][0])
+				return x ? EndState.HORIZONTAL_TOP_X : EndState.HORIZONTAL_TOP_O;
+			
+			//VL
+			if(board[0][0] == board[0][1] && board[0][1] == board[0][2])
+				return x ? EndState.VERTICAL_LEFT_X : EndState.VERTICAL_LEFT_O;
+			
+			//DLR
+			if(board[0][0] == board[1][1] && board[1][1] == board[2][2])
+				return x ? EndState.DIAGONAL_LR_X : EndState.DIAGONAL_LR_O;
+		}
+		
+		//HC, VC, DRL
+		if(board[1][1] != 0) {
+			x = board[1][1] == 1;
+			
+			//HC
+			if(board[0][1] == board[1][1] && board[1][1] == board[2][1])
+				return x ? EndState.HORIZONTAL_CENTER_X : EndState.HORIZONTAL_CENTER_O;
+			
+			//VC
+			if(board[1][0] == board[1][1] && board[1][1] == board[1][2])
+				return x ? EndState.VERTICAL_CENTER_X : EndState.VERTICAL_CENTER_O;
+			
+			//DRL
+			if(board[0][2] == board[1][1] && board[1][1] == board[2][0])
+				return x ? EndState.DIAGONAL_RL_X : EndState.DIAGONAL_RL_O;
+		}
+		
+		//HB, VR
+		if(board[2][2] != 0) {
+			x = board[2][2] == 1;
+			
+			//HB
+			if(board[0][2] == board[1][2] && board[1][2] == board[2][2])
+				return x ? EndState.HORIZONTAL_BOTTOM_X : EndState.HORIZONTAL_BOTTOM_O;
+			
+			//VR
+			if(board[2][0] == board[2][1] && board[2][1] == board[2][2])
+				return x ? EndState.VERTICAL_RIGHT_X : EndState.VERTICAL_RIGHT_O;
+		}
+		
+		//No wins found
+		return EndState.IN_PROGRESS;
+	}
+	
+	/**
 	 * ActionListener method for the buttons
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch(e.getActionCommand()) {
 			case "test1":	//Tests
-				System.out.println("bepis");
+				endState = checkForWin();
+				canvas.setEndState(endState);
 				break;
 			
 			case "test2":
-				System.out.println("conke");
+				Random r = new Random();
+				for(int i = 0; i < board.length; i++)
+					for(int j = 0; j < board[i].length; j++)
+						board[i][j] = r.nextInt(3);
+				
+				canvas.updateGame(board);
 				break;
 			
 			case "back":	//Switch panel to the connect/host/menu screen

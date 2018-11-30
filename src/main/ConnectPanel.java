@@ -109,8 +109,9 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	/**
 	 * Switch view to the game
 	 */
-	void startGamePanel(){
+	void startGamePanel(boolean player){
 		((CardLayout)(m.panel.getLayout())).show(m.panel, "Game Panel");
+		m.gamePanel.setPlayer(player);
 		m.gamePanel.initCanvas();
 	}
 	
@@ -193,7 +194,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 			
 			case "Success":
 				ipMessage.setText("Success!");
-				startGamePanel();
+				startGamePanel(false);
 				break;
 			
 			default:
@@ -253,7 +254,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 			
 			case "Success":
 				portMessage.setText("Success!");
-				startGamePanel();
+				startGamePanel(true);
 				break;
 			
 			default:
@@ -279,7 +280,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 				break;
 			
 			case "test":
-				startGamePanel();
+				startGamePanel(true);
 				break;
 			
 			case "host":

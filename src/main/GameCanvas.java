@@ -17,7 +17,7 @@ import java.awt.Rectangle;
 public class GameCanvas extends Canvas {
 	//Mouse variables
 	int mouseX = 0, mouseY = 0;
-	boolean mousePressed = false;
+	boolean mousePressed = false, mouseOnCanvas = false;
 	
 	//Graphics Variables
 	/*BufferedImage img;*/
@@ -45,7 +45,7 @@ public class GameCanvas extends Canvas {
 		//Draw background squares, darker if the mouse is over them and darker still if it is clicked
 		for(int i = 0; i < 3; i++)
 			for(int j = 0; j < 3; j++) {
-				if(mouseX >= (getWidth() / 3) * i && mouseX < (getWidth() / 3) * (i + 1) &&
+				if(mouseOnCanvas && mouseX >= (getWidth() / 3) * i && mouseX < (getWidth() / 3) * (i + 1) &&
                    mouseY >= (getHeight() / 3) * j && mouseY < (getHeight() / 3) * (j + 1))
 					if(mousePressed)
 						g.setColor(new Color(0, 200, 210));
@@ -139,10 +139,11 @@ public class GameCanvas extends Canvas {
 	 * @param y The y-coordinate of the mouse on the canvas
 	 * @param p Weather or not the mouse is pressed
 	 */
-	void updateMouse(int x, int y, boolean p) {
+	void updateMouse(int x, int y, boolean p, boolean c) {
 		mouseX = x;
 		mouseY = y;
 		mousePressed = p;
+		mouseOnCanvas = c;
 		
 		//System.out.println(mouseX + " " + mouseY + " " + mousePressed);
 	}

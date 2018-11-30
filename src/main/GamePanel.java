@@ -2,6 +2,7 @@ package main;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -12,8 +13,8 @@ import java.util.Random;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import connection.Connection;
 
@@ -31,17 +32,17 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	
 	GameButtons buttons = new GameButtons(this);
 	
-	JTextField netTestField = new JTextField();
-	JButton netTestButton = new JButton("Net Test");
+	JLabel gameMessage = new JLabel("");
 	
 	//Mouse variables
 	int mouseX = 0, mouseY = 0;
 	
-	boolean mousePressed = false;
+	boolean mousePressed = false, mouseOnCanvas = false;
 	
 	//Game variables
 	int[][] board = new int[3][3];
 	int frameRate = 20;
+	boolean player = false;
 	EndState endState = EndState.IN_PROGRESS;
 	Connection con;	//The connection, may be a server or client
 	
@@ -62,12 +63,17 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		canvas.setSize(300, 300);
 		canvas.setBackground(new Color(255, 255, 255));
 		
+		//Setup labels
+		gameMessage.setFont(new Font(getFont().getFontName(), Font.PLAIN, 20));
+		gameMessage.setAlignmentX(CENTER_ALIGNMENT);
+		
 		//Add listeners
 		canvas.addMouseListener(this);
 		canvas.addMouseMotionListener(this);
 		
 		//Add components
 		add(canvas);
+		add(gameMessage);
 		add(buttons);
 	}
 	
@@ -87,6 +93,14 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	 */
 	public void setConnection(Connection c) {
 		con = c;
+	}
+	
+	/**
+	 * Sets whether the player is connecting or hosting
+	 * @param player What type of player this is. Hosting = true
+	 */
+	public void setPlayer(boolean player) {
+		this.player = player;
 	}
 	
 	/**
@@ -207,7 +221,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		//System.out.println("Mouse PRESSED at " + e.getX() + ", " + e.getY());
 		
 		mousePressed = true;
-		canvas.updateMouse(mouseX, mouseY, mousePressed);
+		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);
 	}
 	
 	/**
@@ -218,7 +232,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		//System.out.println("Mouse RELEASED at " + e.getX() + ", " + e.getY());
 		
 		mousePressed = false;
-		canvas.updateMouse(mouseX, mouseY, mousePressed);
+		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);
 	}
 	
 	/**
@@ -230,7 +244,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		
 		mouseX = e.getX();
 		mouseY = e.getY();
-		canvas.updateMouse(mouseX, mouseY, mousePressed);
+		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);
 	}
 	
 	/**
@@ -242,17 +256,29 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		
 		mouseX = e.getX();
 		mouseY = e.getY();
-		canvas.updateMouse(mouseX, mouseY, mousePressed);
+		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);
+	}
+	
+	/**
+	 * Used MouseListener method
+	 */
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		mouseOnCanvas = true;
+		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);
+	}
+	
+	/**
+	 * Used MouseListener method
+	 */
+	@Override
+	public void mouseExited(MouseEvent e) {
+		mouseOnCanvas = false;
+		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);
 	}
 	
 	//MouseListener Methods (Unused)
 	@Override
 	public void mouseClicked(MouseEvent e) {
-	}
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-	@Override
-	public void mouseExited(MouseEvent e) {
 	}
 }

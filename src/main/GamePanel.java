@@ -12,11 +12,12 @@ import java.io.IOException;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import connection.Connection;
+import state.EndState;
+import state.TurnState;
 
 /**
  * The overarching panel for the game. Handles the game itself.
@@ -32,7 +33,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	
 	GameButtons buttons = new GameButtons(this);
 	
-	JLabel gameMessage = new JLabel("");
+	JLabel gameMessage = new JLabel("Starting...");
 	
 	//Mouse variables
 	int mouseX = 0, mouseY = 0;
@@ -44,6 +45,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	int frameRate = 20;
 	boolean player = false;
 	EndState endState = EndState.IN_PROGRESS;
+	TurnState turn = TurnState.THEIRS;
 	Connection con;	//The connection, may be a server or client
 	
 	boolean canvasStarted = false;
@@ -82,6 +84,10 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	 */
 	public void initCanvas() {
 		if(canvasStarted) return;	//Don't start it multiple times
+		
+		canvas.setSize(500, 430);
+		canvas.setMaximumSize(canvas.getSize());
+		
 		canvas.createImage();
 		new CUpdater(canvas, frameRate).start();
 		canvasStarted = true;
@@ -176,6 +182,33 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	}
 	
 	/**
+	 * Swaps the turn and disables/enables buttons
+	 */
+	void updateTurn(TurnState t) {
+		turn = t;
+		
+		switch(turn) {
+			case YOURS:
+				gameMessage.setText("It is your turn.");
+				break;
+			
+			case THEIRS:
+				gameMessage.setText("It is their turn.");
+				break;
+			
+			case END:
+				if(endState.getPlayer() == "x") {
+					gameMessage.setText(player ? "You win!" : "You lose.");
+				} else {
+					gameMessage.setText(player ? "You lose." : "You win!");
+				}
+				break;
+		}
+		
+		canvas.updateGame(board, turn);
+	}
+	
+	/**
 	 * ActionListener method for the buttons
 	 */
 	@Override
@@ -192,7 +225,11 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 					for(int j = 0; j < board[i].length; j++)
 						board[i][j] = r.nextInt(3);
 				
-				canvas.updateGame(board);
+				switch(turn) {
+					
+				}
+				
+				canvas.updateGame(board, turn);
 				break;
 			
 			case "back":	//Switch panel to the connect/host/menu screen

@@ -1,7 +1,8 @@
-package main;
+package state;
 
+//TODO: write values
 public enum EndState {
-	IN_PROGRESS,
+	IN_PROGRESS (0),
 	
 	HORIZONTAL_TOP_X,
 	HORIZONTAL_TOP_O,
@@ -25,5 +26,15 @@ public enum EndState {
 	DIAGONAL_LR_O,
 	
 	DIAGONAL_RL_X,
-	DIAGONAL_RL_O
+	DIAGONAL_RL_O;
+	
+	int val;	//Integer version of the state
+	
+	EndState(int val){
+		this.val = val;
+	}
+	
+	public String getPlayer() {
+		
+	}
 }

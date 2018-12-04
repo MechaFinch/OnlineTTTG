@@ -9,6 +9,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import state.EndState;
+import state.TurnState;
+
 /**
  * The canvas object with the game board in it
  * @author Alex Pickering
@@ -26,6 +29,7 @@ public class GameCanvas extends Canvas {
 	int[][] board = new int[3][3];
 	boolean gameEnded = false;
 	EndState endState = EndState.IN_PROGRESS;
+	TurnState turn = TurnState.THEIRS;
 	
 	/**
 	 * Default constructor
@@ -46,13 +50,26 @@ public class GameCanvas extends Canvas {
 		for(int i = 0; i < 3; i++)
 			for(int j = 0; j < 3; j++) {
 				if(mouseOnCanvas && mouseX >= (getWidth() / 3) * i && mouseX < (getWidth() / 3) * (i + 1) &&
-                   mouseY >= (getHeight() / 3) * j && mouseY < (getHeight() / 3) * (j + 1))
-					if(mousePressed)
-						g.setColor(new Color(0, 200, 210));
-					else
-						g.setColor(new Color(40, 240, 250));
-				else
-					g.setColor(new Color(150, 240, 250));
+                   mouseY >= (getHeight() / 3) * j && mouseY < (getHeight() / 3) * (j + 1)) {
+					if(mousePressed) {
+						if(turn == TurnState.YOURS || turn == TurnState.END)
+							g.setColor(new Color(0, 200, 210));
+						else
+							g.setColor(new Color(0, 160, 170));
+					} else {
+						if(turn == TurnState.YOURS || turn == TurnState.END) {
+							g.setColor(new Color(40, 240, 250));
+						} else {
+							g.setColor(new Color(0, 200, 210));
+						}
+					}
+				} else {
+					if(turn == TurnState.YOURS || turn == TurnState.END) {
+						g.setColor(new Color(150, 240, 250));
+					} else {
+						g.setColor(new Color(110, 200, 210));
+					}
+				}
 				
 				g.fillRect((getWidth() / 3) * i, (getHeight() / 3) * j, getWidth(), getHeight());
 			}
@@ -152,8 +169,9 @@ public class GameCanvas extends Canvas {
 	 * Updates game variables relevant to graphics
 	 * @param b The board object
 	 */
-	void updateGame(int[][] b) {
+	void updateGame(int[][] b, TurnState t) {
 		board = b;
+		turn = t;
 	}
 	
 	/**

@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import connection.Connection;
+import connection.ServerConnection;
 import state.EndState;
 import state.TurnState;
 
@@ -107,6 +108,12 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	 */
 	public void setPlayer(boolean player) {
 		this.player = player;
+		if(player)
+			turn = TurnState.YOURS;
+		else {
+			turn = TurnState.THEIRS;
+			startPlaying();
+		}	
 	}
 	
 	/**
@@ -209,6 +216,86 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	}
 	
 	/**
+	 * Checks that the square the player selected is unoccupied and updates the game
+	 * Tells the server that a selection has been made if it is
+	 */
+	void validateAndSend(){
+		//Check that the square is unoccupied
+		int x = -1, y = -1, width = canvas.getWidth(), height = canvas.getHeight();
+		
+		check:	//Breaking label
+		for(int i = 0; i < 3; i++)
+			for(int j = 0; j < 3; j++)
+				if(mouseX >= (width / 3) * i && mouseX < (width / 3) * (i + 1) &&
+				   mouseY >= (height / 3) * j && mouseY < (height / 3) * (j + 1)) {
+					x = i;
+					y = j;
+					break check;
+				}
+		
+		if(board[x][y] != 0)	//Board space is occupied
+			return;
+		
+		//Tell server
+		if(player) {	//This game is hosting
+			try {	//Tell the client the selection
+				con.send("select " + x + " " + y);
+				board[x][y] = 1;
+				updateTurn(TurnState.THEIRS);
+				canvas.updateGame(board, turn);
+				
+				//Get client's selection
+				String[] move = con.receive().split(" ");
+				board[Integer.parseInt(move[1])][Integer.parseInt(move[2])] = 2;
+				updateTurn(TurnState.YOURS);
+				canvas.updateGame(board, turn);
+			} catch(IllegalStateException e) {
+				e.printStackTrace();
+			} catch(IOException e) {
+				gameMessage.setText("IOException while sending or receiving selection");
+				e.printStackTrace();
+			}
+		} else {	//This game is connecting
+			try {	//Tell the server the selection
+				con.send("select " + x + " " + y);
+				board[x][y] = 2;
+				updateTurn(TurnState.THEIRS);
+				canvas.updateGame(board, turn);
+				
+				//Get the host's selection
+				String[] move = con.receive().split(" ");
+				board[Integer.parseInt(move[1])][Integer.parseInt(move[2])] = 1;
+				updateTurn(TurnState.YOURS);
+				canvas.updateGame(board, turn);
+			} catch(IllegalStateException e) {
+				e.printStackTrace();
+			} catch(IOException e) {
+				gameMessage.setText("IOException when sending or receiving selection");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Client-only method run to start listening for the host's selection the first time
+	 */
+	void startPlaying() {
+		//Get the host's selection
+		String[] move;
+		try {
+			move = con.receive().split(" ");
+			board[Integer.parseInt(move[1])][Integer.parseInt(move[2])] = 1;
+			updateTurn(TurnState.YOURS);
+			canvas.updateGame(board, turn);
+		} catch(IllegalStateException e) {
+			e.printStackTrace();
+		} catch(IOException e) {
+			gameMessage.setText("IOException when sending or receiving selection");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * ActionListener method for the buttons
 	 */
 	@Override
@@ -226,7 +313,19 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 						board[i][j] = r.nextInt(3);
 				
 				switch(turn) {
+					case END:
+						break;
 					
+					case THEIRS:
+						updateTurn(TurnState.YOURS);
+						break;
+					
+					case YOURS:
+						updateTurn(TurnState.THEIRS);
+						break;
+					
+					default:
+						break;
 				}
 				
 				canvas.updateGame(board, turn);
@@ -256,6 +355,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		//System.out.println("Mouse PRESSED at " + e.getX() + ", " + e.getY());
+		
+		if(turn == TurnState.YOURS)	//validate selected square and tell the server
+			validateAndSend();
 		
 		mousePressed = true;
 		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);

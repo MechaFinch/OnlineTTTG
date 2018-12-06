@@ -111,8 +111,8 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	 */
 	void startGamePanel(boolean player){
 		((CardLayout)(m.panel.getLayout())).show(m.panel, "Game Panel");
+		m.gamePanel.initCanvas();	//Note in case this is changed - initCanvas MUST come before setPlayer (start graphics update thread before playing)
 		m.gamePanel.setPlayer(player);
-		m.gamePanel.initCanvas();
 	}
 	
 	/**

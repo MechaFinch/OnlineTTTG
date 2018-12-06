@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
@@ -16,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import connection.Connection;
-import connection.ServerConnection;
 import state.EndState;
 import state.TurnState;
 
@@ -109,9 +110,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	public void setPlayer(boolean player) {
 		this.player = player;
 		if(player)
-			turn = TurnState.YOURS;
+			updateTurn(TurnState.YOURS);
 		else {
-			turn = TurnState.THEIRS;
+			updateTurn(TurnState.THEIRS);
 			startPlaying();
 		}	
 	}
@@ -216,91 +217,20 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	}
 	
 	/**
-	 * Checks that the square the player selected is unoccupied and updates the game
-	 * Tells the server that a selection has been made if it is
-	 */
-	void validateAndSend(){
-		//Check that the square is unoccupied
-		int x = -1, y = -1, width = canvas.getWidth(), height = canvas.getHeight();
-		
-		check:	//Breaking label
-		for(int i = 0; i < 3; i++)
-			for(int j = 0; j < 3; j++)
-				if(mouseX >= (width / 3) * i && mouseX < (width / 3) * (i + 1) &&
-				   mouseY >= (height / 3) * j && mouseY < (height / 3) * (j + 1)) {
-					x = i;
-					y = j;
-					break check;
-				}
-		
-		if(board[x][y] != 0)	//Board space is occupied
-			return;
-		
-		//Tell server
-		if(player) {	//This game is hosting
-			try {	//Tell the client the selection
-				con.send("select " + x + " " + y);
-				board[x][y] = 1;
-				updateTurn(TurnState.THEIRS);
-				canvas.updateGame(board, turn);
-				
-				//Get client's selection
-				String[] move = con.receive().split(" ");
-				board[Integer.parseInt(move[1])][Integer.parseInt(move[2])] = 2;
-				updateTurn(TurnState.YOURS);
-				canvas.updateGame(board, turn);
-			} catch(IllegalStateException e) {
-				e.printStackTrace();
-			} catch(IOException e) {
-				gameMessage.setText("IOException while sending or receiving selection");
-				e.printStackTrace();
-			}
-		} else {	//This game is connecting
-			try {	//Tell the server the selection
-				con.send("select " + x + " " + y);
-				board[x][y] = 2;
-				updateTurn(TurnState.THEIRS);
-				canvas.updateGame(board, turn);
-				
-				//Get the host's selection
-				String[] move = con.receive().split(" ");
-				board[Integer.parseInt(move[1])][Integer.parseInt(move[2])] = 1;
-				updateTurn(TurnState.YOURS);
-				canvas.updateGame(board, turn);
-			} catch(IllegalStateException e) {
-				e.printStackTrace();
-			} catch(IOException e) {
-				gameMessage.setText("IOException when sending or receiving selection");
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	/**
 	 * Client-only method run to start listening for the host's selection the first time
 	 */
 	void startPlaying() {
-		//Get the host's selection
-		String[] move;
-		try {
-			move = con.receive().split(" ");
-			board[Integer.parseInt(move[1])][Integer.parseInt(move[2])] = 1;
-			updateTurn(TurnState.YOURS);
-			canvas.updateGame(board, turn);
-		} catch(IllegalStateException e) {
-			e.printStackTrace();
-		} catch(IOException e) {
-			gameMessage.setText("IOException when sending or receiving selection");
-			e.printStackTrace();
-		}
+		new TurnListener(this, con).run();
 	}
 	
 	/**
-	 * ActionListener method for the buttons
+	 * ActionListener method for the buttons and other things
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		switch(e.getActionCommand()) {
+		String[] s = e.getActionCommand().split(" ");
+		
+		switch(s[0]) {
 			case "test1":	//Tests
 				endState = checkForWin();
 				canvas.setEndState(endState);
@@ -331,6 +261,12 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 				canvas.updateGame(board, turn);
 				break;
 			
+			case "turnFinished":	//Called when the other player's turn finishes
+				//Update turn and board
+				board[Integer.parseInt(s[1])][Integer.parseInt(s[2])] = player ? 1 : 2;
+				updateTurn(TurnState.YOURS);
+				break;
+			
 			case "back":	//Switch panel to the connect/host/menu screen
 				back();
 				break;
@@ -356,8 +292,42 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	public void mousePressed(MouseEvent e) {
 		//System.out.println("Mouse PRESSED at " + e.getX() + ", " + e.getY());
 		
-		if(turn == TurnState.YOURS)	//validate selected square and tell the server
-			validateAndSend();
+		if(turn == TurnState.YOURS) {
+			//Get selection
+			int x = -1, y = -1, w = canvas.getWidth(), h = canvas.getHeight();
+			
+			for(int i = 0; i < 3; i++)
+				for(int j = 0; j < 3; j++)
+					if(mouseOnCanvas && mouseX >= (w / 3) * i && mouseX < (w / 3) * (i + 1) &&
+	                   mouseY >= (h / 3) * j && mouseY < (h / 3) * (j + 1)) {
+						x = i;
+						y = j;
+					}
+			
+			System.out.println(x + " " + y);
+			
+			//Update things if unoccupied
+			if(x != -1 && y != -1) {
+				//Nested if just in case of out of bounds exception
+				if(board[x][y] != 0) {
+					try {
+						con.send(x + " " + y);
+						System.out.println("sent " + x + " " + y);
+						
+						//Update turn
+						updateTurn(TurnState.THEIRS);
+						
+						//Listen for response
+						new TurnListener(this, con).run();
+					} catch(IllegalStateException e1) {
+						e1.printStackTrace();
+					} catch(IOException e1) {
+						gameMessage.setText("IOException while sending turn");
+						e1.printStackTrace();
+					}
+				}
+			}
+		}
 		
 		mousePressed = true;
 		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);
@@ -414,6 +384,30 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	public void mouseExited(MouseEvent e) {
 		mouseOnCanvas = false;
 		canvas.updateMouse(mouseX, mouseY, mousePressed, mouseOnCanvas);
+	}
+	
+	/**
+	 * Gets mouseX
+	 * @return The x position of the mouse
+	 */
+	public int getMouseX() {
+		return mouseX;
+	}
+	
+	/**
+	 * Gets mouseY
+	 * @return The y position of the mouse
+	 */
+	public int getMouseY() {
+		return mouseY;
+	}
+	
+	/**
+	 * Gets the representation of the board
+	 * @return The board object
+	 */
+	public int[][] getBoard(){
+		return board;
 	}
 	
 	//MouseListener Methods (Unused)

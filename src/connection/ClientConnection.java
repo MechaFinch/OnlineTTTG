@@ -69,4 +69,9 @@ public class ClientConnection implements Connection {
 		//Send
 		write.println(msg);
 	}
+
+	@Override
+	public void disconnect() throws IOException {
+		con.close();
+	}
 }

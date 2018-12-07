@@ -16,6 +16,12 @@ public interface Connection {
 	public abstract String connect() throws IOException;
 	
 	/**
+	 * Disconnects
+	 * @throws IOException
+	 */
+	public abstract void disconnect() throws IOException;
+	
+	/**
 	 * Receive a message from the connection
 	 * @return Message received
 	 * @throws IllegalStateException if not connected

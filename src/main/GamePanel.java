@@ -220,7 +220,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	 * Client-only method run to start listening for the host's selection the first time
 	 */
 	void startPlaying() {
-		new TurnListener(this, con).run();
+		new Thread(new TurnListener(this, con)).start();
 	}
 	
 	/**
@@ -263,7 +263,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 			
 			case "turnFinished":	//Called when the other player's turn finishes
 				//Update turn and board
-				board[Integer.parseInt(s[1])][Integer.parseInt(s[2])] = player ? 1 : 2;
+				board[Integer.parseInt(s[1])][Integer.parseInt(s[2])] = player ? 2 : 1;
 				updateTurn(TurnState.YOURS);
 				break;
 			
@@ -278,9 +278,14 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	}
 	
 	/**
-	 * Switches the panel back to the connect/host/menu screen
+	 * Switches the panel back to the connect/host/menu screen, also disconnects
 	 */
 	void back() {
+		try {
+			con.disconnect();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 		((CardLayout)(m.panel.getLayout())).show(m.panel, "Connect Panel");
 	}
 	
@@ -304,21 +309,20 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 						y = j;
 					}
 			
-			System.out.println(x + " " + y);
-			
 			//Update things if unoccupied
 			if(x != -1 && y != -1) {
 				//Nested if just in case of out of bounds exception
-				if(board[x][y] != 0) {
+				if(board[x][y] == 0) {
 					try {
 						con.send(x + " " + y);
+						board[x][y] = player ? 1 : 2;
 						System.out.println("sent " + x + " " + y);
 						
 						//Update turn
 						updateTurn(TurnState.THEIRS);
 						
 						//Listen for response
-						new TurnListener(this, con).run();
+						new Thread(new TurnListener(this, con)).start();
 					} catch(IllegalStateException e1) {
 						e1.printStackTrace();
 					} catch(IOException e1) {

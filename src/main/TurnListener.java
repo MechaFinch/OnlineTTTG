@@ -23,7 +23,12 @@ public class TurnListener implements Runnable {
 		} catch(IllegalStateException e) {
 			e.printStackTrace();
 		} catch(IOException e) {
-			p.gameMessage.setText("IO Exception while listening for response");
+			if(e.getMessage().contains("Connection reset")) {
+				p.gameMessage.setText("Connection Lost");
+			} else {
+				p.gameMessage.setText("IO Exception while listening for response");
+			}
+			
 			e.printStackTrace();
 		}
 	}

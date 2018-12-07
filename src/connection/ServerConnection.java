@@ -50,6 +50,7 @@ public class ServerConnection implements Connection {
 		try {
 			if(receive().equals(rand)) {
 				send("Success");
+				ss.close();
 				return "Success";
 			}
 		} catch(NullPointerException e) {	//No response
@@ -76,5 +77,10 @@ public class ServerConnection implements Connection {
 		
 		//Send
 		write.println(msg);
+	}
+
+	@Override
+	public void disconnect() throws IOException {
+		con.close();
 	}
 }

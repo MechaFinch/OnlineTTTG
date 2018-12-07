@@ -123,16 +123,20 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		InetAddress testIP;
 		int port;
 		try {
-			String[] sa;
+			String[] sa = new String[2];
 			String s = ipField.getText();
 			
-			try {	//Check if its just a port, use localhost
-				Integer.parseInt(s);
-				sa = new String[2];
+			if(s.equals("")) {
 				sa[0] = "localhost";
-				sa[1] = s;
-			} catch(NumberFormatException e1) {	//ip:port
-				sa = s.split(":");
+				sa[1] = "1234";
+			} else {
+				try {	//Check if its just a port, use localhost
+					Integer.parseInt(s);
+					sa[0] = "localhost";
+					sa[1] = s;
+				} catch(NumberFormatException e1) {	//ip:port
+					sa = s.split(":");
+				}
 			}
 			
 			//Check if both exist
@@ -210,12 +214,16 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		int port;
 		
 		//Get and check port
-		try {
-			port = Integer.parseInt(portField.getText());
-		} catch(NumberFormatException e) {
-			System.out.println("Not a Number");
-			portMessage.setText("Failed: Not a Number");
-			return;
+		if(portField.getText().equals("")) {
+			port = 1234;
+		} else {
+			try {
+				port = Integer.parseInt(portField.getText());
+			} catch(NumberFormatException e) {
+				System.out.println("Not a Number");
+				portMessage.setText("Failed: Not a Number");
+				return;
+			}
 		}
 		
 		if(port < 1024 || port > 49151) {

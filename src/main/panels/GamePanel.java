@@ -1,4 +1,4 @@
-package main;
+package main.panels;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -9,8 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
@@ -18,6 +16,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import connection.Connection;
+import main.CUpdater;
+import main.OnlineTicTacToe;
+import main.PlayerData;
+import main.TurnListener;
 import state.EndState;
 import state.TurnState;
 
@@ -35,7 +37,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	
 	GameButtons buttons = new GameButtons(this);
 	
-	JLabel gameMessage = new JLabel("Starting...");
+	public JLabel gameMessage = new JLabel("Starting...");
 	
 	//Mouse variables
 	int mouseX = 0, mouseY = 0;
@@ -49,6 +51,8 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	EndState endState = EndState.IN_PROGRESS;
 	TurnState turn = TurnState.THEIRS;
 	Connection con;	//The connection, may be a server or client
+	PlayerData data;
+	PlayerData opponentData;
 	
 	boolean canvasStarted = false;
 	
@@ -194,6 +198,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	 */
 	void updateTurn(TurnState t) {
 		turn = t;
+		
+		endState = checkForWin();
+		canvas.setEndState(endState);
 		
 		switch(turn) {
 			case YOURS:

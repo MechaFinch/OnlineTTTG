@@ -1,4 +1,4 @@
-package main;
+package main.panels;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import connection.ClientConnection;
 import connection.Connection;
 import connection.ServerConnection;
+import main.OnlineTicTacToe;
 
 /**
  * The panel for the connect to or create a game view
@@ -41,20 +42,21 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	JButton conButton = new JButton("Connect") {{setSize(100, 50); setMaximumSize(getSize());}},
 			hostButton = new JButton("Host") {{setSize(100, 50); setMaximumSize(getSize());}},
 			exitButton = new JButton("Exit") {{setSize(100, 50); setMaximumSize(getSize());}},
-			testButton = new JButton("Test") {{setSize(100, 50); setMaximumSize(getSize());}};
+			testButton = new JButton("Test") {{setSize(100, 50); setMaximumSize(getSize());}},
+			playerButton = new JButton("Player") {{setSize(100, 50); setMaximumSize(getSize());}};
 	
 	/**
 	 * Panel screen for the main menu
 	 * @param m
 	 */
-	ConnectPanel(OnlineTicTacToe m){
+	public ConnectPanel(OnlineTicTacToe m){
 		//Get main instance so we can switch panels
 		this.m = m;
 		
 		//Setup layout
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
-		//Misc unique setup things
+		//Set font
 		title.setFont(new Font(getFont().getFontName(), Font.PLAIN, 36));
 		
 		//Setup Commands
@@ -63,6 +65,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		
 		conButton.setActionCommand("connect");
 		hostButton.setActionCommand("host");
+		playerButton.setActionCommand("player");
 		exitButton.setActionCommand("exit");
 		testButton.setActionCommand("test");
 		
@@ -72,6 +75,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		
 		conButton.addActionListener(this);
 		hostButton.addActionListener(this);
+		playerButton.addActionListener(this);
 		exitButton.addActionListener(this);
 		testButton.addActionListener(this);
 		
@@ -85,6 +89,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		
 		conButton.setAlignmentX(CENTER_ALIGNMENT);
 		hostButton.setAlignmentX(CENTER_ALIGNMENT);
+		playerButton.setAlignmentX(CENTER_ALIGNMENT);
 		exitButton.setAlignmentX(CENTER_ALIGNMENT);
 		testButton.setAlignmentX(CENTER_ALIGNMENT);
 		
@@ -102,6 +107,9 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		add(portMessage);
 		add(Box.createRigidArea(new Dimension(0, 10)));
 		
+		add(playerButton);
+		add(Box.createRigidArea(new Dimension(0, 10)));
+		
 		add(exitButton);
 		add(testButton);
 	}
@@ -113,6 +121,13 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		((CardLayout)(m.panel.getLayout())).show(m.panel, "Game Panel");
 		m.gamePanel.initCanvas();	//Note in case this is changed - initCanvas MUST come before setPlayer (start graphics update thread before playing)
 		m.gamePanel.setPlayer(player);
+	}
+	
+	/**
+	 * Switch to player info panel
+	 */
+	void viewPlayerInfo() {
+		((CardLayout)(m.panel.getLayout())).show(m.panel, "Player Panel");
 	}
 	
 	/**
@@ -294,6 +309,11 @@ public class ConnectPanel extends JPanel implements ActionListener{
 			case "host":
 				System.out.println("Host: " + portField.getText());
 				host();
+				break;
+			
+			case "player":
+				System.out.println("View player info");
+				viewPlayerInfo();
 				break;
 			
 			case "ipSubmit":

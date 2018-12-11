@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import connection.Connection;
+import main.panels.GamePanel;
 
 /**
  * Listens for the other player's response with their turn data, sends an event to the game panel

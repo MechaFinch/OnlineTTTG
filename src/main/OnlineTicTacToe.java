@@ -12,14 +12,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import main.panels.ConnectPanel;
+import main.panels.GamePanel;
+import main.panels.PlayerPanel;
+
 /**
  * Main program to run, doesn't do much other than hold the panels and frame
  * @author 21jpickering
  */
 public class OnlineTicTacToe {
 	JFrame frame = new JFrame("Graphical Online TTT");
-	JPanel panel = new JPanel(new CardLayout());
-	GamePanel gamePanel = new GamePanel(this);
+	public JPanel panel = new JPanel(new CardLayout());
+	public GamePanel gamePanel = new GamePanel(this);
+	public PlayerPanel playerPanel = new PlayerPanel(this);
 	ConnectPanel connectPanel = new ConnectPanel(this);
 	
 	BufferedImage splashImage;
@@ -85,6 +90,7 @@ public class OnlineTicTacToe {
 		panel.add(new JLabel(new ImageIcon(splashImage)), "Splash Image");
 		panel.add(gamePanel, "Game Panel");
 		panel.add(connectPanel, "Connect Panel");
+		panel.add(playerPanel, "Player Panel");
 		
 		((CardLayout)(panel.getLayout())).show(panel, "Splash Image");
 		

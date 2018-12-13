@@ -68,7 +68,6 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		//Setup canvas parameters
-		canvas.setSize(300, 300);
 		canvas.setBackground(new Color(255, 255, 255));
 		
 		//Setup labels

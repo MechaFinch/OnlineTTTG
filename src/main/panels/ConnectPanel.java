@@ -128,6 +128,7 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	 */
 	void viewPlayerInfo() {
 		((CardLayout)(m.panel.getLayout())).show(m.panel, "Player Panel");
+		m.playerPanel.updateDataArea();
 	}
 	
 	/**

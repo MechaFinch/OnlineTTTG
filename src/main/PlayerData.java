@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 public class PlayerData {
 	int wins, losses, draws, plays;
 	String name;
+	File saveFile;
 	
 	/**
 	 * Default constructor. Creates new data for the player
@@ -21,6 +22,8 @@ public class PlayerData {
 	 */
 	public PlayerData(String name) {
 		this.name = name;
+		
+		saveFile = new File("players/" + name + ".pd");
 		
 		wins = losses = draws = plays = 0;
 	}
@@ -31,13 +34,25 @@ public class PlayerData {
 	 * @throws IOException 
 	 */
 	public PlayerData(File f) throws IOException {
-		String[] dat = readData(f).split(" ");
+		saveFile = f;
+		
+		String[] dat = readData().split(" ");
 		
 		name = dat[0];
 		wins = Integer.parseInt(dat[1]);
 		losses = Integer.parseInt(dat[2]);
 		draws = Integer.parseInt(dat[3]);
 		plays = Integer.parseInt(dat[4]);
+	}
+	
+	public PlayerData(String name, int wins, int losses, int draws, int plays) {
+		this.name = name;
+		this.wins = wins;
+		this.losses = losses;
+		this.draws = draws;
+		this.plays = plays;
+		
+		saveFile = new File("players/" + name + ".pd");
 	}
 	
 	/**
@@ -70,8 +85,8 @@ public class PlayerData {
 	 * @return The player's data, read from the file
 	 * @throws IOException 
 	 */
-	String readData(File f) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(f));
+	String readData() throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(saveFile));
 		String r = "";
 		
 		for(int i = 0; i < 5; i++) {
@@ -95,8 +110,10 @@ public class PlayerData {
 	 * @param f The file to write to
 	 * @throws IOException
 	 */
-	public void save(File f) throws IOException {
-		PrintWriter pr = new PrintWriter(new FileWriter(f), true);
+	public void save() throws IOException {
+		if(!saveFile.exists()) saveFile.createNewFile();
+		
+		PrintWriter pr = new PrintWriter(new FileWriter(saveFile, false), true);
 		
 		pr.println(name);
 		pr.println(wins);

@@ -12,9 +12,10 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class GameButtons extends JPanel {
 	//Them Buttons
-	JButton test1 = new JButton("Test 1"),
-			test2 = new JButton("Test 2"),
-			back = new JButton("Back");
+	JButton back = new JButton("Back"),
+			cont = new JButton("Continue");
+	
+	boolean continueEnabled = false;
 	
 	/**
 	 * Default Constructor
@@ -22,18 +23,24 @@ public class GameButtons extends JPanel {
 	 */
 	public GameButtons(ActionListener al) {
 		//Add listeners to the buttons
-		test1.addActionListener(al);
-		test2.addActionListener(al);
 		back.addActionListener(al);
+		cont.addActionListener(al);
 		
 		//Set the button ids
-		test1.setActionCommand("test1");
-		test2.setActionCommand("test2");
 		back.setActionCommand("back");
+		cont.setActionCommand("continue");
 		
 		//Get them in the panel
-		add(test1);
-		add(test2);
 		add(back);
+	}
+	
+	public void toggleContinue() {
+		if(continueEnabled) {
+			remove(cont);
+		} else {
+			add(cont);
+		}
+		
+		continueEnabled = !continueEnabled;
 	}
 }

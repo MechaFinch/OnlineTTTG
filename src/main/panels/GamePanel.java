@@ -188,8 +188,13 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 				return x ? EndState.VERTICAL_RIGHT_X : EndState.VERTICAL_RIGHT_O;
 		}
 		
-		//No wins found
-		return EndState.IN_PROGRESS;
+		//Check for open spaces (in progress)
+		for(int i = 0; i < 3; i++)
+			for(int j = 0; j < 3; j++)
+				if(board[i][j] == 0) return EndState.IN_PROGRESS;
+		
+		//No open spaces, no win
+		return EndState.DRAW;
 	}
 	
 	/**
@@ -199,6 +204,9 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		turn = t;
 		
 		endState = checkForWin();
+		
+		if(!endState.getPlayer().equals("")) turn = TurnState.END;
+		
 		canvas.setEndState(endState);
 		
 		switch(turn) {
@@ -213,9 +221,24 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 			case END:
 				if(endState.getPlayer() == "x") {
 					gameMessage.setText(player ? "You win!" : "You lose.");
-				} else {
+					
+					if(player)
+						data.incrementWins();
+					else
+						data.incrementLosses();
+				} else if(endState.getPlayer() == "o"){
 					gameMessage.setText(player ? "You lose." : "You win!");
+					
+					if(player)
+						data.incrementLosses();
+					else
+						data.incrementWins();
+				} else {
+					gameMessage.setText("Draw!");
+					data.incrementDraws();
 				}
+				
+				buttons.toggleContinue();
 				break;
 		}
 		

@@ -38,11 +38,11 @@ public class PlayerData {
 		
 		String[] dat = readData().split(" ");
 		
-		name = dat[0];
-		wins = Integer.parseInt(dat[1]);
-		losses = Integer.parseInt(dat[2]);
-		draws = Integer.parseInt(dat[3]);
-		plays = Integer.parseInt(dat[4]);
+		name = dat[1];
+		wins = Integer.parseInt(dat[2]);
+		losses = Integer.parseInt(dat[3]);
+		draws = Integer.parseInt(dat[4]);
+		plays = Integer.parseInt(dat[5]);
 	}
 	
 	public PlayerData(String name, int wins, int losses, int draws, int plays) {

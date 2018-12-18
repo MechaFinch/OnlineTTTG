@@ -41,8 +41,6 @@ public class PlayerPanel extends JPanel implements ActionListener{
 	
 	JScrollPane dataPane = new JScrollPane(dataArea) {{setSize(400, 240); setMaximumSize(getSize());}};
 	
-	JOptionPane overwriteWarning = new JOptionPane(new Object(), JOptionPane.WARNING_MESSAGE);
-	
 	JButton backButton = new JButton("Back") {{setSize(100, 50); setMaximumSize(getSize());}},
 			loadButton = new JButton("Load") {{setSize(100, 50); setMaximumSize(getSize());}},
 			createButton = new JButton("Create") {{setSize(100, 50); setMaximumSize(getSize());}};
@@ -153,6 +151,8 @@ public class PlayerPanel extends JPanel implements ActionListener{
 			fileMessage.setText("IOException while loading data");
 			e.printStackTrace();
 		}
+		
+		updateDataArea();
 	}
 	
 	/**
@@ -181,12 +181,21 @@ public class PlayerPanel extends JPanel implements ActionListener{
 			fileMessage.setText("Please enter a name");
 			return;
 		} else if(new File("players/" + s + ".pd").exists()) {
+			int sel = JOptionPane.showConfirmDialog(this, "This will overwrite a save. Continue?", "Overwite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			
+			if(sel == 2) return;
 		}
 		
 		if(!fileMessage.getText().equals("")) fileMessage.setText("");
 		
 		playerData = new PlayerData(s);
+		
+		try {
+			playerData.save();
+		} catch(IOException e) {
+			fileMessage.setText("IOException while saving new player data");
+			e.printStackTrace();
+		}
 	}
 	
 	/**

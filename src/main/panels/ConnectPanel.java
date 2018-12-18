@@ -42,7 +42,6 @@ public class ConnectPanel extends JPanel implements ActionListener{
 	JButton conButton = new JButton("Connect") {{setSize(100, 50); setMaximumSize(getSize());}},
 			hostButton = new JButton("Host") {{setSize(100, 50); setMaximumSize(getSize());}},
 			exitButton = new JButton("Exit") {{setSize(100, 50); setMaximumSize(getSize());}},
-			testButton = new JButton("Test") {{setSize(100, 50); setMaximumSize(getSize());}},
 			playerButton = new JButton("Player") {{setSize(100, 50); setMaximumSize(getSize());}};
 	
 	/**
@@ -67,7 +66,6 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		hostButton.setActionCommand("host");
 		playerButton.setActionCommand("player");
 		exitButton.setActionCommand("exit");
-		testButton.setActionCommand("test");
 		
 		//Setup Listeners
 		ipField.addActionListener(this);
@@ -77,7 +75,6 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		hostButton.addActionListener(this);
 		playerButton.addActionListener(this);
 		exitButton.addActionListener(this);
-		testButton.addActionListener(this);
 		
 		//Setup alignments
 		title.setAlignmentX(CENTER_ALIGNMENT);
@@ -91,7 +88,6 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		hostButton.setAlignmentX(CENTER_ALIGNMENT);
 		playerButton.setAlignmentX(CENTER_ALIGNMENT);
 		exitButton.setAlignmentX(CENTER_ALIGNMENT);
-		testButton.setAlignmentX(CENTER_ALIGNMENT);
 		
 		//Add components, rigidAreas are separators
 		add(title);
@@ -111,7 +107,6 @@ public class ConnectPanel extends JPanel implements ActionListener{
 		add(Box.createRigidArea(new Dimension(0, 10)));
 		
 		add(exitButton);
-		add(testButton);
 	}
 	
 	/**

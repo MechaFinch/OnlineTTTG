@@ -26,7 +26,9 @@ public enum EndState {
 	DIAGONAL_LR_O (12),
 	
 	DIAGONAL_RL_X (13),
-	DIAGONAL_RL_O (14);
+	DIAGONAL_RL_O (14),
+	
+	DRAW (15);
 	
 	int val;	//Integer version of the state
 	
@@ -35,8 +37,8 @@ public enum EndState {
 	}
 	
 	public String getPlayer() {
-		if(val == IN_PROGRESS.val) {
-			return "";
+		if(val == IN_PROGRESS.val || val == DRAW.val) {
+			return val == IN_PROGRESS.val ? "" : "draw";
 		}
 		
 		return val % 2 == 1 ? "x" : "o";

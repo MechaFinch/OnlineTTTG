@@ -212,6 +212,14 @@ public class PlayerPanel extends JPanel implements ActionListener{
 	public PlayerData getPlayerData() {
 		return playerData;
 	}
+	
+	/**
+	 * Updates the player's data
+	 * @param pd The new version of playerData
+	 */
+	public void setPlayerData(PlayerData pd) {
+		playerData = pd;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

@@ -139,6 +139,9 @@ public class GameCanvas extends Canvas {
 			case DIAGONAL_RL_X: case DIAGONAL_RL_O:
 				g.drawLine((w * 2) + (wc * 3), hc, wc, (h * 2) + (hc * 3));
 				break;
+			
+			default:
+				break;
 		}
 		
 		//Draw img to the screen

@@ -219,30 +219,40 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 				break;
 			
 			case END:
-				if(endState.getPlayer() == "x") {
-					gameMessage.setText(player ? "You win!" : "You lose.");
-					
-					if(player)
-						data.incrementWins();
-					else
-						data.incrementLosses();
-				} else if(endState.getPlayer() == "o"){
-					gameMessage.setText(player ? "You lose." : "You win!");
-					
-					if(player)
-						data.incrementLosses();
-					else
-						data.incrementWins();
-				} else {
-					gameMessage.setText("Draw!");
-					data.incrementDraws();
-				}
-				
+				updateEnd();
 				buttons.toggleContinue();
 				break;
 		}
 		
 		canvas.updateGame(board, turn);
+	}
+	
+	/**
+	 * Gives end feedback (who wins, etc) and updates player data
+	 */
+	void updateEnd() {
+		data = m.playerPanel.getPlayerData();
+		
+		if(endState.getPlayer() == "x") {
+			gameMessage.setText(player ? "You win!" : "You lose.");
+			
+			if(player)
+				data.incrementWins();
+			else
+				data.incrementLosses();
+		} else if(endState.getPlayer() == "o"){
+			gameMessage.setText(player ? "You lose." : "You win!");
+			
+			if(player)
+				data.incrementLosses();
+			else
+				data.incrementWins();
+		} else {
+			gameMessage.setText("Draw!");
+			data.incrementDraws();
+		}
+		
+		m.playerPanel.setPlayerData(data);
 	}
 	
 	/**

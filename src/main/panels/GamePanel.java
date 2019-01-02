@@ -222,6 +222,10 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 				updateEnd();
 				buttons.toggleContinue();
 				break;
+			
+			case DISCONNECTED:
+				gameMessage.setText("Other player disconnected.");
+				break;
 		}
 		
 		canvas.updateGame(board, turn);
@@ -310,6 +314,10 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 				back();
 				break;
 			
+			case "continue":	//Continue playing after a game ended
+				playAgain();
+				break;
+			
 			default:	//Something went wrong
 				System.out.println("aaaaAAAAA");
 				break;
@@ -325,7 +333,40 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+		
+		resetStates();
+		
 		((CardLayout)(m.panel.getLayout())).show(m.panel, "Connect Panel");
+	}
+	
+	/**
+	 * Starts a new game after an old one
+	 */
+	void playAgain() {
+		resetStates();
+		
+		canvas.setEndState(EndState.IN_PROGRESS);
+		
+		updateTurn(player ? TurnState.YOURS : TurnState.THEIRS);
+		
+		if(!player) {	//Client needs to start listening again
+			startPlaying();
+		}
+		
+		buttons.toggleContinue();	//Remove continue button
+		
+		//Check if still connected
+		if(!con.connected()) {
+			updateTurn(TurnState.DISCONNECTED);
+		}
+	}
+	
+	/**
+	 * Resets the EndState, board, and other game objects
+	 */
+	void resetStates() {
+		board = new int[3][3];
+		endState = EndState.IN_PROGRESS;
 	}
 	
 	/**
@@ -335,6 +376,12 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		//System.out.println("Mouse PRESSED at " + e.getX() + ", " + e.getY());
+		
+		//Check that we're still connected
+		System.out.println(con.connected());
+		if(!con.connected()) {
+			updateTurn(TurnState.DISCONNECTED);
+		}
 		
 		if(turn == TurnState.YOURS) {
 			//Get selection

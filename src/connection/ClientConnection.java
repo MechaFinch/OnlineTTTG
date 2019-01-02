@@ -74,4 +74,9 @@ public class ClientConnection implements Connection {
 	public void disconnect() throws IOException {
 		con.close();
 	}
+	
+	@Override
+	public boolean connected() {
+		return con.isConnected() && !con.isClosed();
+	}
 }

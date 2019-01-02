@@ -36,6 +36,12 @@ public interface Connection {
 	public abstract void send(String msg) throws IllegalStateException, IOException;
 	
 	/**
+	 * Checks if still connected
+	 * @return Whether or not the connection is still connected
+	 */
+	public abstract boolean connected();
+	
+	/**
 	 * Creates a random string for handshakes
 	 * @param len The length of the generated string
 	 * @return A random string

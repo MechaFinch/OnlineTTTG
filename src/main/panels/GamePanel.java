@@ -220,7 +220,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 			
 			case END:
 				updateEnd();
-				buttons.toggleContinue();
+				buttons.enableContinue();
 				break;
 			
 			case DISCONNECTED:
@@ -353,7 +353,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 			startPlaying();
 		}
 		
-		buttons.toggleContinue();	//Remove continue button
+		buttons.disableContinue();	//Remove continue button
 		
 		//Check if still connected
 		if(!con.connected()) {

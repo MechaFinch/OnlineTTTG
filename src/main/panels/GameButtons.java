@@ -15,8 +15,6 @@ public class GameButtons extends JPanel {
 	JButton back = new JButton("Back"),
 			cont = new JButton("Continue");
 	
-	boolean continueEnabled = false;
-	
 	/**
 	 * Default Constructor
 	 * @param al The ActionListener to be attached to them
@@ -34,13 +32,11 @@ public class GameButtons extends JPanel {
 		add(back);
 	}
 	
-	public void toggleContinue() {
-		if(continueEnabled) {
-			remove(cont);
-		} else {
-			add(cont);
-		}
-		
-		continueEnabled = !continueEnabled;
+	public void enableContinue() {
+		add(cont);
+	}
+	
+	public void disableContinue() {
+		remove(cont);
 	}
 }

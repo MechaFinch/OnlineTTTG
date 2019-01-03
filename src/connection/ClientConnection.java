@@ -73,10 +73,13 @@ public class ClientConnection implements Connection {
 	@Override
 	public void disconnect() throws IOException {
 		con.close();
+		con.shutdownInput();
+		con.shutdownOutput();
 	}
 	
 	@Override
 	public boolean connected() {
-		return con.isConnected() && !con.isClosed();
+		return true;
+		//TODO: this
 	}
 }

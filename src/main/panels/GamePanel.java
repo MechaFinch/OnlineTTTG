@@ -356,7 +356,7 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		buttons.disableContinue();	//Remove continue button
 		
 		//Check if still connected
-		if(!con.connected()) {
+		if(con.isDisconnected()) {
 			updateTurn(TurnState.DISCONNECTED);
 		}
 	}
@@ -378,8 +378,8 @@ public class GamePanel extends JPanel implements ActionListener, MouseListener, 
 		//System.out.println("Mouse PRESSED at " + e.getX() + ", " + e.getY());
 		
 		//Check that we're still connected
-		System.out.println(con.connected());
-		if(!con.connected()) {
+		System.out.println(con.isDisconnected());
+		if(con.isDisconnected()) {
 			updateTurn(TurnState.DISCONNECTED);
 		}
 		

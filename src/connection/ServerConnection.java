@@ -18,6 +18,7 @@ public class ServerConnection implements Connection {
 	//Network objects
 	ServerSocket ss;
 	Socket con;
+	Heartbeat heartbeat;
 	
 	//Network IO
 	PrintWriter write;
@@ -87,8 +88,12 @@ public class ServerConnection implements Connection {
 	}
 	
 	@Override
-	public boolean connected() {
-		return true;
-		//TODO: this
+	public void startHeartbeat() {
+		heartbeat.start();
+	}
+	
+	@Override
+	public boolean isDisconnected() {
+		return heartbeat.isDisconnected();
 	}
 }

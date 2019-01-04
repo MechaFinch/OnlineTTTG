@@ -22,6 +22,16 @@ public interface Connection {
 	public abstract void disconnect() throws IOException;
 	
 	/**
+	 * Tells if the other connection has disconnected
+	 */
+	public abstract boolean isDisconnected();
+	
+	/**
+	 * Starts the connection monitor heartbeat
+	 */
+	public abstract void startHeartbeat();
+	
+	/**
 	 * Receive a message from the connection
 	 * @return Message received
 	 * @throws IllegalStateException if not connected
@@ -34,12 +44,6 @@ public interface Connection {
 	 * @throws IllegalStateException if not connected
 	 */
 	public abstract void send(String msg) throws IllegalStateException, IOException;
-	
-	/**
-	 * Checks if still connected
-	 * @return Whether or not the connection is still connected
-	 */
-	public abstract boolean connected();
 	
 	/**
 	 * Creates a random string for handshakes

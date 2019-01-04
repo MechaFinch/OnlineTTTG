@@ -18,6 +18,7 @@ public class ClientConnection implements Connection {
 	//Network variables
 	Socket con;
 	InetAddress ip;
+	Heartbeat heartbeat;
 	int port;
 	
 	//Network IO
@@ -31,6 +32,8 @@ public class ClientConnection implements Connection {
 	public ClientConnection(InetAddress ip, int port) {
 		this.ip = ip;
 		this.port = port;
+		
+		
 	}
 
 	@Override
@@ -78,8 +81,12 @@ public class ClientConnection implements Connection {
 	}
 	
 	@Override
-	public boolean connected() {
-		return true;
-		//TODO: this
+	public void startHeartbeat() {
+		heartbeat.start();
+	}
+	
+	@Override
+	public boolean isDisconnected() {
+		return heartbeat.isDisconnected();
 	}
 }

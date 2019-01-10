@@ -27,11 +27,6 @@ public interface Connection {
 	public abstract boolean isDisconnected();
 	
 	/**
-	 * Starts the connection monitor heartbeat
-	 */
-	public abstract void startHeartbeat();
-	
-	/**
 	 * Receive a message from the connection
 	 * @return Message received
 	 * @throws IllegalStateException if not connected

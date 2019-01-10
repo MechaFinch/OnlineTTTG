@@ -51,7 +51,19 @@ public class ClientConnection implements Connection {
 		send(s);
 		
 		//Record responce
-		return receive();
+		String r = receive();
+		
+		//Create heartbeat
+		HeartbeatConnection hbc = new HeartbeatConnection(false, ip.toString() + ":" + (port + 1));
+		
+		if(hbc.create().equals("failed")) {
+			return "Connection not created"; //TODO: finish implementing heartbeat here and in serverconnection
+		}
+		
+		heartbeat = new Heartbeat(hbc, false);
+		heartbeat.start();
+		
+		return r;
 	}
 	
 	//These would be default methods but they use non-final variables so oh well
@@ -76,13 +88,7 @@ public class ClientConnection implements Connection {
 	@Override
 	public void disconnect() throws IOException {
 		con.close();
-		con.shutdownInput();
-		con.shutdownOutput();
-	}
-	
-	@Override
-	public void startHeartbeat() {
-		heartbeat.start();
+		heartbeat.disconnect();
 	}
 	
 	@Override

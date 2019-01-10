@@ -52,6 +52,17 @@ public class ServerConnection implements Connection {
 			if(receive().equals(rand)) {
 				send("Success");
 				ss.close();
+				
+				//Create heartbeat
+				HeartbeatConnection hbc = new HeartbeatConnection(true, Integer.toString(ss.getLocalPort() + 1));
+				
+				if(hbc.create().equals("failed")) {
+					return "Handshake Failed";
+				}
+				
+				heartbeat = new Heartbeat(hbc, true);
+				heartbeat.start();
+				
 				return "Success";
 			}
 		} catch(NullPointerException e) {	//No response
@@ -83,13 +94,7 @@ public class ServerConnection implements Connection {
 	@Override
 	public void disconnect() throws IOException {
 		con.close();
-		con.shutdownInput();
-		con.shutdownOutput();
-	}
-	
-	@Override
-	public void startHeartbeat() {
-		heartbeat.start();
+		heartbeat.disconnect();
 	}
 	
 	@Override

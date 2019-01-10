@@ -37,6 +37,18 @@ public class Heartbeat {
 	}
 	
 	/**
+	 * Disconnects the heartbeat
+	 */
+	public void disconnect() {
+		disconnected = true;
+		try {
+			con.disconnect();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * Tells if there's been a disconnect
 	 * @return Whether or not there has been a disconnection
 	 */
@@ -81,7 +93,8 @@ class Listener implements Runnable {
 				}
 				
 				c.send("heartbeat");
-			} catch(IOException e) {
+			} catch(IOException | NullPointerException e) {
+				System.out.println("Caught while listening:");
 				e.printStackTrace();
 				h.setDisconnected(true);
 				break;
@@ -124,7 +137,8 @@ class Sender implements Runnable {
 					h.setDisconnected(true);
 					break;
 				}
-			} catch(IOException e) {
+			} catch(IOException | NullPointerException e) {
+				System.out.println("Caught while sending:");
 				e.printStackTrace();
 				h.setDisconnected(true);
 				break;

@@ -209,7 +209,6 @@ public class ConnectPanel extends JPanel implements ActionListener{
 			
 			case "Success":
 				ipMessage.setText("Success!");
-				c.startHeartbeat();
 				startGamePanel(false);
 				break;
 			
@@ -274,7 +273,6 @@ public class ConnectPanel extends JPanel implements ActionListener{
 			
 			case "Success":
 				portMessage.setText("Success!");
-				c.startHeartbeat();
 				startGamePanel(true);
 				break;
 			

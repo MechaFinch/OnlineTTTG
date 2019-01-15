@@ -192,6 +192,8 @@ public class PlayerPanel extends JPanel implements ActionListener{
 		
 		try {
 			playerData.save();
+			
+			fileMessage.setText("Player Data created successfully");
 		} catch(IOException e) {
 			fileMessage.setText("IOException while saving new player data");
 			e.printStackTrace();

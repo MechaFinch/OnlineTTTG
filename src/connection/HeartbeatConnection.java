@@ -51,9 +51,11 @@ public class HeartbeatConnection implements Connection {
 				read = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				write = new PrintWriter(new BufferedWriter(new OutputStreamWriter(con.getOutputStream())), true);
 			} else {	//Client
-				//Clean localhost
-				if(ip.contains("localhost")) ip = ip.split(":")[0].substring(0, 9) + ":" + ip.split(":")[1];
-				con = new Socket(InetAddress.getByName(ip.split(":")[0]), Integer.parseInt(ip.split(":")[1]));
+				//Clean localhost and debug
+				System.out.println("IP: " + ip);
+				
+				if(ip.contains("localhost")) ip = "localhost:" + ip.split(":")[1];
+				con = new Socket(InetAddress.getByName(ip.split(":")[0].substring(1)), Integer.parseInt(ip.split(":")[1]));
 				
 				read = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				write = new PrintWriter(new BufferedWriter(new OutputStreamWriter(con.getOutputStream())), true);
